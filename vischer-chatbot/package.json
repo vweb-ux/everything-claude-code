@@ -1,0 +1,12 @@
+{
+  "name": "vischer-chatbot-config",
+  "version": "1.0.0",
+  "description": "VISCHER Website Information Assistant — Konfiguration und Safety-Logik",
+  "private": true,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node tests/run-all.js",
+    "sitemap-check": "node scripts/import-sitemap.js"
+  },
+  "dependencies": {}
+}
