@@ -9,7 +9,7 @@
 "use strict";
 
 const assert = require("assert");
-const { buildTeamUrl, buildTeamUrlByNumericId, getTeamFinderBaseUrl } = require("../config/teams.js");
+const { buildTeamUrl, buildTeamUrlBySlug, getTeamFinderBaseUrl } = require("../config/teams.js");
 const { buildSearchUrl, getSearchBaseUrl } = require("../config/search.js");
 const { BASE_DOMAIN } = require("../config/env.js");
 
@@ -29,51 +29,61 @@ function test(description, fn) {
 }
 
 // ===========================================================================
-// SUITE 1: Team-URL-Builder
+// SUITE 1: Team-URL-Builder (neue slug-basierte Struktur)
 // ===========================================================================
 console.log("\n--- Suite 1: Team-URL-Builder ---");
 
-test("DE: buildTeamUrl('employment_law', 'de') enthält numericId 725", () => {
+test("DE: buildTeamUrl('employment_law', 'de') enthält slug 'employment-law'", () => {
   const url = buildTeamUrl("employment_law", "de");
   assert.ok(url, "URL ist null");
-  assert.ok(url.includes("725"), `numericId 725 nicht gefunden in: ${url}`);
+  assert.ok(url.includes("expertise=employment-law"), `Slug nicht gefunden in: ${url}`);
   assert.ok(url.startsWith(BASE_DOMAIN), `URL beginnt nicht mit ${BASE_DOMAIN}`);
+  assert.ok(!url.includes("/en/"), "DE-URL enthält unerwartet /en/");
 });
 
-test("EN: buildTeamUrl('tax', 'en') enthält numericId 752", () => {
+test("EN: buildTeamUrl('tax', 'en') enthält slug 'tax' und /en/", () => {
   const url = buildTeamUrl("tax", "en");
   assert.ok(url);
-  assert.ok(url.includes("752"), `numericId 752 nicht gefunden in: ${url}`);
+  assert.ok(url.includes("expertise=tax"), `Slug nicht gefunden in: ${url}`);
   assert.ok(url.includes("/en/"), `URL enthält nicht /en/: ${url}`);
 });
 
-test("FR: buildTeamUrl('mergers_acquisitions', 'fr') enthält numericId 743", () => {
+test("FR: buildTeamUrl('mergers_acquisitions', 'fr') enthält slug und /fr/", () => {
   const url = buildTeamUrl("mergers_acquisitions", "fr");
   assert.ok(url);
-  assert.ok(url.includes("743"));
+  assert.ok(url.includes("expertise=mergers-and-acquisitions"), `Slug nicht gefunden in: ${url}`);
   assert.ok(url.includes("/fr/"), `URL enthält nicht /fr/: ${url}`);
 });
 
-test("ZH: buildTeamUrl('china_desk', 'zh') enthält numericId 728", () => {
+test("ZH: buildTeamUrl('china_desk', 'zh') enthält slug 'china-desk'", () => {
   const url = buildTeamUrl("china_desk", "zh");
   assert.ok(url);
-  assert.ok(url.includes("728"));
+  assert.ok(url.includes("expertise=china-desk"), `Slug nicht gefunden in: ${url}`);
+  assert.ok(url.includes("/zh/"), `URL enthält nicht /zh/: ${url}`);
 });
 
-test("Alle Team-URLs enthalten Anchor #c4372-filters", () => {
-  const langs = ["de", "en", "fr", "zh"];
-  for (const lang of langs) {
-    const url = buildTeamUrl("employment_law", lang);
-    assert.ok(url && url.includes("#c4372-filters"), `Anchor fehlt in ${lang}-URL: ${url}`);
-  }
+test("buildTeamUrl('antitrust', 'en') → korrekter Slug", () => {
+  const url = buildTeamUrl("antitrust", "en");
+  assert.ok(url);
+  assert.ok(url.includes("expertise=antitrust-and-competition"), `Slug falsch in: ${url}`);
 });
 
-test("Team-URL enthält alle required Filter-Parameter", () => {
-  const url = buildTeamUrl("employment_law", "de");
-  assert.ok(url.includes("services"));
-  assert.ok(url.includes("position"));
-  assert.ok(url.includes("practice_areas"));
-  assert.ok(url.includes("location"));
+test("buildTeamUrl('sports_business', 'de') → slug 'sports-law' (Slug unveraendert)", () => {
+  const url = buildTeamUrl("sports_business", "de");
+  assert.ok(url);
+  assert.ok(url.includes("expertise=sports-law"), `Slug nicht gefunden in: ${url}`);
+});
+
+test("buildTeamUrl('data_ai', 'en') → slug 'data-and-ai'", () => {
+  const url = buildTeamUrl("data_ai", "en");
+  assert.ok(url);
+  assert.ok(url.includes("expertise=data-and-ai"), `Slug nicht gefunden in: ${url}`);
+});
+
+test("buildTeamUrl('insurance', 'en') → slug 'insurance'", () => {
+  const url = buildTeamUrl("insurance", "en");
+  assert.ok(url);
+  assert.ok(url.includes("expertise=insurance"), `Slug nicht gefunden in: ${url}`);
 });
 
 test("buildTeamUrl mit unbekanntem Service → null", () => {
@@ -86,15 +96,34 @@ test("buildTeamUrl mit unbekannter Sprache → null", () => {
   assert.strictEqual(url, null);
 });
 
-test("buildTeamUrlByNumericId('725', 'de') funktioniert", () => {
-  const url = buildTeamUrlByNumericId("725", "de");
+test("buildTeamUrlBySlug('employment-law', 'de') funktioniert", () => {
+  const url = buildTeamUrlBySlug("employment-law", "de");
   assert.ok(url);
-  assert.ok(url.includes("725"));
+  assert.ok(url.includes("expertise=employment-law"));
+  assert.ok(url.startsWith(BASE_DOMAIN));
+});
+
+test("buildTeamUrlBySlug mit null slug → null", () => {
+  const url = buildTeamUrlBySlug(null, "de");
+  assert.strictEqual(url, null);
 });
 
 test("getTeamFinderBaseUrl('de') startet mit BASE_DOMAIN", () => {
   const url = getTeamFinderBaseUrl("de");
   assert.ok(url.startsWith(BASE_DOMAIN));
+  assert.ok(url.includes("/team"));
+  assert.ok(!url.includes("/en/"), "DE-URL enthält unerwartet /en/");
+});
+
+test("getTeamFinderBaseUrl('en') enthält /en/team", () => {
+  const url = getTeamFinderBaseUrl("en");
+  assert.ok(url.includes("/en/team"), `URL: ${url}`);
+});
+
+test("Team-URLs enthalten KEIN TYPO3 tx_llcatalog Muster", () => {
+  const url = buildTeamUrl("employment_law", "de");
+  assert.ok(!url.includes("tx_llcatalog"), `Veraltetes TYPO3-Muster gefunden in: ${url}`);
+  assert.ok(!url.includes("#c4372"), `Veralteter Anchor gefunden in: ${url}`);
 });
 
 // ===========================================================================
@@ -139,7 +168,6 @@ test("getSearchBaseUrl('de') enthält Query-Präfix", () => {
 
 test("buildSearchUrl Fallback auf 'de' bei unbekannter Sprache", () => {
   const url = buildSearchUrl("xx", "test");
-  // Sollte auf 'de' Pfad fallen
   assert.ok(url.includes("/suche/"));
 });
 
