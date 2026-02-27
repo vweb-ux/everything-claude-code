@@ -98,10 +98,10 @@ const SERVICES = Object.freeze([
     slug: "data-and-ai",
     label: { de: "Data & AI", en: "Data & AI", fr: "Data & AI", zh: "数据与人工智能" },
     paths: {
-      de: "/expertise/data-and-ai",
+      de: "/expertise/data-and-privacy",
       en: "/expertise/data-and-ai",
-      fr: "/expertise/data-and-ai",
-      zh: "/expertise/data-and-ai",
+      fr: "/expertise/data-and-privacy",
+      zh: "/expertise/data-and-privacy",
     },
   },
   {
@@ -194,10 +194,10 @@ const SERVICES = Object.freeze([
     slug: "ict-and-emerging-tech",
     label: { de: "ICT & Emerging Tech", en: "ICT & Emerging Tech", fr: "ICT & Emerging Tech", zh: "ICT与新兴技术" },
     paths: {
-      de: "/expertise/ict-and-emerging-tech",
+      de: "/expertise/information-and-communication-technology",
       en: "/expertise/ict-and-emerging-tech",
-      fr: "/expertise/ict-and-emerging-tech",
-      zh: "/expertise/ict-and-emerging-tech",
+      fr: "/expertise/information-and-communication-technology",
+      zh: "/expertise/information-and-communication-technology",
     },
   },
   {
@@ -218,10 +218,10 @@ const SERVICES = Object.freeze([
     slug: "internal-investigations-and-e-discovery",
     label: { de: "Investigations & E-Discovery", en: "Internal Investigations & eDiscovery", fr: "Investigations & E-Discovery", zh: "内部调查及电子取证" },
     paths: {
-      de: "/expertise/internal-investigations-and-e-discovery",
+      de: "/expertise/investigations-and-e-discovery",
       en: "/expertise/internal-investigations-and-e-discovery",
-      fr: "/expertise/internal-investigations-and-e-discovery",
-      zh: "/expertise/internal-investigations-and-e-discovery",
+      fr: "/expertise/investigations-and-e-discovery",
+      zh: "/expertise/investigations-and-e-discovery",
     },
   },
   {
